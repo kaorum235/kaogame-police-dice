@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>警察サイコロ</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -11,42 +12,42 @@ body {
   background: #0e1e36;
   color: #dde8f5;
   min-height: 100vh;
-  padding: 16px;
-  font-size: 18px;
+  padding: 12px;
+  font-size: 16px;
 }
 
 h1 {
   text-align: center;
-  font-size: 2.2em;
+  font-size: 1.8em;
   color: #ffd700;
-  margin-bottom: 4px;
-  letter-spacing: 4px;
+  margin-bottom: 2px;
+  letter-spacing: 3px;
   text-shadow: 0 0 16px rgba(255,215,0,0.4);
 }
 .subtitle {
   text-align: center;
   color: #7799bb;
-  margin-bottom: 20px;
-  font-size: 1em;
-  letter-spacing: 2px;
+  margin-bottom: 14px;
+  font-size: 0.8em;
+  letter-spacing: 1px;
 }
 
 .age-bar {
   text-align: center;
-  font-size: 1.5em;
+  font-size: 1.3em;
   color: #aacce8;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
-.age-bar strong { color: #ffffff; font-size: 1.3em; }
+.age-bar strong { color: #ffffff; font-size: 1.25em; }
 
 .promotion-badge {
   display: inline-block;
   background: #b8860b;
   color: #fff;
-  font-size: 0.65em;
-  padding: 3px 12px;
+  font-size: 0.6em;
+  padding: 3px 10px;
   border-radius: 20px;
-  margin-left: 12px;
+  margin-left: 8px;
   vertical-align: middle;
   animation: pulse 1s infinite alternate;
 }
@@ -55,19 +56,27 @@ h1 {
   to   { opacity: 1; box-shadow: 0 0 10px #ffd700; }
 }
 
-/* ── Player cards ── */
+/* ── Player cards: 横スクロール（モバイル）→ 3列（デスクトップ） ── */
 .players-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin-bottom: 18px;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
 }
+.players-grid::-webkit-scrollbar { height: 4px; }
+.players-grid::-webkit-scrollbar-track { background: #0e1e36; }
+.players-grid::-webkit-scrollbar-thumb { background: #2a4060; border-radius: 2px; }
 
 .player-card {
   background: #16293f;
   border: 2px solid #2a4060;
   border-radius: 12px;
-  padding: 16px;
+  padding: 14px;
+  flex: 0 0 80vw;        /* モバイル: 画面幅の80% */
+  scroll-snap-align: start;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 .player-card.active {
@@ -75,9 +84,9 @@ h1 {
   box-shadow: 0 0 14px rgba(255,215,0,0.3);
 }
 .player-card h2 {
-  font-size: 1.15em;
+  font-size: 1.1em;
   color: #ffd700;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   padding-bottom: 8px;
   border-bottom: 1px solid #2a4060;
   display: flex;
@@ -89,32 +98,32 @@ h1 {
 .badge-player { background: #1a4a7a; color: #7acfff; font-size: 0.65em; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
 .badge-cpu    { background: #2a3a20; color: #88cc66; font-size: 0.65em; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
 
-.rank-label { font-size: 0.8em; color: #7799bb; margin-bottom: 3px; }
-.rank-value { font-size: 1.25em; font-weight: bold; color: #aaddff; margin-bottom: 10px; }
+.rank-label { font-size: 0.78em; color: #7799bb; margin-bottom: 2px; }
+.rank-value { font-size: 1.2em; font-weight: bold; color: #aaddff; margin-bottom: 8px; }
 
-.rank-stars { display: flex; gap: 4px; margin-bottom: 10px; }
-.rank-star { width: 11px; height: 11px; border-radius: 50%; background: #2a4060; }
+.rank-stars { display: flex; gap: 3px; margin-bottom: 8px; flex-wrap: wrap; }
+.rank-star { width: 10px; height: 10px; border-radius: 50%; background: #2a4060; }
 .rank-star.filled { background: #ffd700; }
 
-.dep-label { font-size: 0.8em; color: #7799bb; margin-bottom: 3px; }
-.dep-value { font-size: 1.05em; color: #dde8f5; margin-bottom: 12px; }
+.dep-label { font-size: 0.78em; color: #7799bb; margin-bottom: 2px; }
+.dep-value { font-size: 1em; color: #dde8f5; margin-bottom: 12px; }
 .dep-value.special { color: #ff88ff; font-weight: bold; }
 
 .btn-resume {
   display: block;
   width: 100%;
-  padding: 7px;
+  padding: 10px;
   background: #1e3a5a;
   border: 1px solid #3a6090;
   border-radius: 8px;
   color: #88bbdd;
-  font-size: 0.9em;
+  font-size: 0.95em;
   cursor: pointer;
   font-family: inherit;
   text-align: center;
   transition: background 0.15s;
 }
-.btn-resume:hover { background: #2a4e6e; color: #aaddff; }
+.btn-resume:active { background: #2a4e6e; }
 
 /* ── Action area ── */
 .action-area {
@@ -122,15 +131,16 @@ h1 {
   background: #16293f;
   border: 2px solid #2a4060;
   border-radius: 14px;
-  padding: 24px 20px;
-  margin-bottom: 18px;
+  padding: 20px 16px;
+  margin-bottom: 14px;
 }
 
 .actor-label {
-  font-size: 1.2em;
+  font-size: 1.1em;
   color: #aacce8;
-  margin-bottom: 16px;
-  min-height: 1.8em;
+  margin-bottom: 14px;
+  min-height: 1.6em;
+  line-height: 1.4;
 }
 .actor-label.promo     { color: #ffd700; }
 .actor-label.cpu-label { color: #88cc66; }
@@ -139,31 +149,32 @@ h1 {
   background: #2a1a4a;
   border: 1px solid #7744aa;
   border-radius: 8px;
-  padding: 10px 18px;
-  margin-bottom: 14px;
-  font-size: 1em;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 0.95em;
   color: #cc99ff;
+  line-height: 1.5;
 }
 
 /* ── Dice ── */
-.dice-wrap { margin-bottom: 18px; }
+.dice-wrap { margin-bottom: 16px; }
 
 .dice {
   display: inline-block;
-  width: 90px; height: 90px;
+  width: 100px; height: 100px;
   background: #fff;
-  border-radius: 16px;
-  font-size: 3.6em;
-  line-height: 90px;
+  border-radius: 18px;
+  font-size: 4em;
+  line-height: 100px;
   text-align: center;
   color: #0e1e36;
   box-shadow: 4px 4px 14px rgba(0,0,0,0.7), inset 0 2px 4px rgba(255,255,255,0.4);
   user-select: none;
-  transition: box-shadow 0.2s;
+  touch-action: manipulation;
 }
 .dice.spinning {
   animation: diceshake 0.12s ease-in-out infinite alternate;
-  box-shadow: 0 0 20px rgba(255,215,0,0.5), 4px 4px 14px rgba(0,0,0,0.7);
+  box-shadow: 0 0 24px rgba(255,215,0,0.6), 4px 4px 14px rgba(0,0,0,0.7);
 }
 @keyframes diceshake {
   from { transform: rotate(-10deg) scale(1.08); }
@@ -177,76 +188,75 @@ h1 {
   100% { transform: rotate(0deg)  scale(1);    }
 }
 .dice-result-label {
-  font-size: 1.1em;
+  font-size: 1.05em;
   color: #aacce8;
   margin-top: 8px;
 }
 .dice-result-label strong { color: #fff; font-size: 1.2em; }
 
 /* ── Buttons ── */
+.btn-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
 .btn {
-  padding: 14px 36px;
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  padding: 16px 20px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 1.15em;
   font-weight: bold;
   cursor: pointer;
   font-family: inherit;
   letter-spacing: 1px;
   transition: background 0.15s, transform 0.1s;
-  margin: 4px 6px;
+  touch-action: manipulation;
 }
-.btn:active { transform: scale(0.96); }
+.btn:active { transform: scale(0.97); }
 
 .btn-primary   { background: #ffd700; color: #0e1e36; }
-.btn-primary:hover { background: #ffe840; }
-
 .btn-stop      { background: #cc3333; color: #fff; font-size: 1.2em; }
-.btn-stop:hover { background: #ee4444; }
-
 .btn-promotion { background: #8b4513; color: #ffe0b0; }
-.btn-promotion:hover { background: #a0522d; }
-
 .btn-next      { background: #2a6a2a; color: #ccffcc; }
-.btn-next:hover { background: #3a8a3a; }
-
 .btn-restart   { background: #3a3a6a; color: #aaaaff; }
-.btn-restart:hover { background: #4a4a8a; }
-
-.btn-retire    { background: #3a2020; color: #cc8888; border: 1px solid #664444; }
-.btn-retire:hover { background: #502828; color: #ffaaaa; }
+.btn-retire    { background: #3a2020; color: #cc8888; border: 1px solid #664444; font-size: 1em; }
 
 .promo-hint {
-  font-size: 1em;
+  font-size: 0.95em;
   color: #ffcc66;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .retired-notice {
   background: #2a1010;
   border: 2px solid #884444;
   border-radius: 10px;
-  padding: 16px 24px;
+  padding: 16px;
   color: #ffaaaa;
-  font-size: 1.2em;
-  margin-bottom: 10px;
+  font-size: 1.1em;
+  margin-bottom: 12px;
 }
 
 /* ── Log ── */
-.log-title { font-size: 0.95em; color: #7799bb; margin-bottom: 6px; letter-spacing: 1px; }
+.log-title { font-size: 0.9em; color: #7799bb; margin-bottom: 6px; letter-spacing: 1px; }
 .log-box {
   background: #0a1628;
   border: 1px solid #1e3050;
   border-radius: 10px;
-  padding: 14px;
-  max-height: 200px;
+  padding: 12px;
+  max-height: 150px;
   overflow-y: auto;
-  font-size: 1em;
-  line-height: 2;
+  font-size: 0.9em;
+  line-height: 1.9;
 }
-.log-box::-webkit-scrollbar { width: 6px; }
+.log-box::-webkit-scrollbar { width: 4px; }
 .log-box::-webkit-scrollbar-track { background: #0a1628; }
-.log-box::-webkit-scrollbar-thumb { background: #2a4060; border-radius: 3px; }
+.log-box::-webkit-scrollbar-thumb { background: #2a4060; border-radius: 2px; }
 
 .log-year     { color: #ffd700; font-weight: bold; }
 .log-player   { color: #7acfff; font-weight: bold; }
@@ -256,18 +266,52 @@ h1 {
 .log-no-promo { color: #886644; }
 
 /* ── Ending ── */
-.ending { text-align: center; padding: 24px 0; }
-.ending h2 { font-size: 2.2em; color: #ffd700; margin-bottom: 8px; }
-.end-sub { color: #7799bb; margin-bottom: 32px; font-size: 1.1em; }
-.result-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 28px; }
-.result-card { background: #16293f; border: 2px solid #2a4060; border-radius: 12px; padding: 22px 14px; }
-.result-card.winner { border-color: #ffd700; box-shadow: 0 0 18px rgba(255,215,0,0.35); }
-.result-place { font-size: 2em; margin-bottom: 10px; }
-.result-name  { font-size: 1.1em; color: #ffd700; margin-bottom: 8px; }
-.result-rank  { font-size: 1.4em; font-weight: bold; color: #aaddff; margin-bottom: 6px; }
-.result-dep   { font-size: 0.95em; color: #7799bb; }
-.final-rank-msg { color: #aacce8; margin-bottom: 24px; font-size: 1.15em; }
-.final-rank-msg strong { color: #ffd700; font-size: 1.2em; }
+.ending { text-align: center; padding: 16px 0; }
+.ending h2 { font-size: 1.8em; color: #ffd700; margin-bottom: 6px; }
+.end-sub { color: #7799bb; margin-bottom: 20px; font-size: 1em; }
+.result-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.result-card { background: #16293f; border: 2px solid #2a4060; border-radius: 12px; padding: 16px; text-align: left; display: flex; align-items: center; gap: 16px; }
+.result-card.winner { border-color: #ffd700; box-shadow: 0 0 14px rgba(255,215,0,0.3); }
+.result-place { font-size: 2em; flex-shrink: 0; }
+.result-info { flex: 1; }
+.result-name  { font-size: 1em; color: #ffd700; margin-bottom: 4px; }
+.result-rank  { font-size: 1.25em; font-weight: bold; color: #aaddff; margin-bottom: 2px; }
+.result-dep   { font-size: 0.85em; color: #7799bb; }
+.final-rank-msg { color: #aacce8; margin-bottom: 20px; font-size: 1.05em; }
+.final-rank-msg strong { color: #ffd700; font-size: 1.15em; }
+
+/* ── デスクトップ ── */
+@media (min-width: 640px) {
+  body { font-size: 17px; padding: 20px; }
+  h1 { font-size: 2.2em; letter-spacing: 4px; }
+  .subtitle { font-size: 0.9em; margin-bottom: 20px; }
+  .age-bar { font-size: 1.5em; margin-bottom: 18px; }
+
+  .players-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    overflow-x: visible;
+  }
+  .player-card { flex: unset; }
+
+  .action-area { padding: 24px 20px; }
+  .actor-label { font-size: 1.2em; }
+
+  .btn-row { flex-direction: row; justify-content: center; }
+  .btn { width: auto; padding: 14px 36px; }
+  .btn-retire { font-size: 1.05em; }
+
+  .log-box { max-height: 200px; font-size: 1em; }
+
+  .result-grid { display: grid; grid-template-columns: repeat(3,1fr); flex-direction: unset; }
+  .result-card { flex-direction: column; text-align: center; gap: 0; }
+  .result-place { margin-bottom: 8px; }
+}
 </style>
 </head>
 <body>
@@ -672,7 +716,7 @@ function render() {
 
   if (S.retired) {
     html += `<div class="retired-notice">🚪 退職しました。お疲れ様でした。</div>`;
-    html += `<button class="btn btn-restart" onclick="restart()">もう一度プレイ</button>`;
+    html += `<div class="btn-row"><button class="btn btn-restart" onclick="restart()">もう一度プレイ</button></div>`;
     html += '</div>';
   } else {
     // 35歳イベント notice
@@ -700,19 +744,21 @@ function render() {
     html += `</div>`;
 
     // Buttons
+    html += '<div class="btn-row">';
     if (S.phase === 'dep_idle') {
       html += `<button class="btn btn-primary" onclick="playerClickDice()">🎲 サイコロを振る</button>`;
       html += `<button class="btn btn-retire" onclick="retirePlayer()">🚪 退職する</button>`;
     } else if (S.phase === 'dep_rolling') {
       html += `<button class="btn btn-stop" onclick="playerClickDice()">✋ 止める！</button>`;
     } else if (S.phase === 'promo_idle') {
-      html += `<div class="promo-hint">1〜3 で昇進　／　4〜6 で昇進なし</div>`;
-      html += `<button class="btn btn-promotion" onclick="playerClickDice()">🎲 昇進サイコロを振る</button>`;
+      html += `<div style="width:100%;text-align:center;"><div class="promo-hint">1〜3 で昇進　／　4〜6 で昇進なし</div>`;
+      html += `<button class="btn btn-promotion" onclick="playerClickDice()">🎲 昇進サイコロを振る</button></div>`;
     } else if (S.phase === 'promo_rolling') {
       html += `<button class="btn btn-stop" onclick="playerClickDice()">✋ 止める！</button>`;
     } else if (S.phase === 'wait_next') {
       html += `<button class="btn btn-next" onclick="nextYear()">次の年へ → （${S.age + 1}歳）</button>`;
     }
+    html += '</div>';
 
     html += '</div>'; // action-area
   }
