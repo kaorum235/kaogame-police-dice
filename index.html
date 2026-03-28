@@ -12,225 +12,164 @@ body {
   background: #0e1e36;
   color: #dde8f5;
   min-height: 100vh;
-  padding: 12px;
+  padding-top: 60px; /* topbar height */
   font-size: 16px;
 }
 
-h1 {
-  text-align: center;
-  font-size: 1.8em;
-  color: #ffd700;
-  margin-bottom: 2px;
-  letter-spacing: 3px;
-  text-shadow: 0 0 16px rgba(255,215,0,0.4);
+/* ── Fixed top bar ─────────────────────────────────────────────────────────── */
+#topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 60px;
+  background: #0a1628;
+  border-bottom: 2px solid #1e3050;
+  display: flex;
+  align-items: center;
+  z-index: 100;
+  padding: 0 10px;
 }
-.subtitle {
-  text-align: center;
-  color: #7799bb;
-  margin-bottom: 14px;
-  font-size: 0.8em;
-  letter-spacing: 1px;
-}
-
-.age-bar {
-  text-align: center;
-  font-size: 1.3em;
-  color: #aacce8;
-  margin-bottom: 12px;
-}
-.age-bar strong { color: #ffffff; font-size: 1.25em; }
-
-.promotion-badge {
+.tb-left  { width: 90px; display: flex; align-items: center; }
+.tb-right { width: 120px; display: flex; align-items: center; justify-content: flex-end; }
+.tb-center { flex: 1; text-align: center; }
+.tb-age { font-size: 1.25em; color: #fff; font-weight: bold; }
+.tb-promo-badge {
   display: inline-block;
   background: #b8860b;
   color: #fff;
-  font-size: 0.6em;
-  padding: 3px 10px;
-  border-radius: 20px;
-  margin-left: 8px;
+  font-size: 0.58em;
+  padding: 2px 7px;
+  border-radius: 12px;
+  margin-left: 6px;
   vertical-align: middle;
   animation: pulse 1s infinite alternate;
 }
 @keyframes pulse {
   from { opacity: 0.7; }
-  to   { opacity: 1; box-shadow: 0 0 10px #ffd700; }
+  to   { opacity: 1; box-shadow: 0 0 8px #ffd700; }
 }
 
-/* ── Player cards: 横スクロール（モバイル）→ 3列（デスクトップ） ── */
-.players-grid {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  gap: 12px;
-  margin-bottom: 14px;
-  padding-bottom: 6px;
-  -webkit-overflow-scrolling: touch;
-}
-.players-grid::-webkit-scrollbar { height: 4px; }
-.players-grid::-webkit-scrollbar-track { background: #0e1e36; }
-.players-grid::-webkit-scrollbar-thumb { background: #2a4060; border-radius: 2px; }
-
-.player-card {
-  background: #16293f;
-  border: 2px solid #2a4060;
-  border-radius: 12px;
-  padding: 14px;
-  flex: 0 0 80vw;        /* モバイル: 画面幅の80% */
-  scroll-snap-align: start;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-.player-card.active {
-  border-color: #ffd700;
-  box-shadow: 0 0 14px rgba(255,215,0,0.3);
-}
-.player-card h2 {
-  font-size: 1.1em;
-  color: #ffd700;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #2a4060;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.card-name { flex: 1; }
-.badge-player { background: #1a4a7a; color: #7acfff; font-size: 0.65em; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
-.badge-cpu    { background: #2a3a20; color: #88cc66; font-size: 0.65em; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
-
-.rank-label { font-size: 0.78em; color: #7799bb; margin-bottom: 2px; }
-.rank-value { font-size: 1.2em; font-weight: bold; color: #aaddff; margin-bottom: 8px; }
-
-.rank-stars { display: flex; gap: 3px; margin-bottom: 8px; flex-wrap: wrap; }
-.rank-star { width: 10px; height: 10px; border-radius: 50%; background: #2a4060; }
-.rank-star.filled { background: #ffd700; }
-
-.dep-label { font-size: 0.78em; color: #7799bb; margin-bottom: 2px; }
-.dep-value { font-size: 1em; color: #dde8f5; margin-bottom: 12px; }
-.dep-value.special { color: #ff88ff; font-weight: bold; }
-
-.btn-resume {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  background: #1e3a5a;
-  border: 1px solid #3a6090;
+.tb-btn {
+  border: none;
   border-radius: 8px;
-  color: #88bbdd;
-  font-size: 0.95em;
-  cursor: pointer;
+  padding: 8px 12px;
   font-family: inherit;
+  font-size: 0.85em;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  touch-action: manipulation;
+}
+.tb-action  { background: #ffd700; color: #0e1e36; }
+.tb-action:active  { background: #ffe840; }
+.tb-promo   { background: #8b4513; color: #ffe0b0; }
+.tb-promo:active   { background: #a0522d; }
+.tb-next    { background: #2a6a2a; color: #ccffcc; font-size: 0.8em; }
+.tb-next:active    { background: #3a8a3a; }
+.tb-retire  { background: transparent; color: #cc8888; border: 1px solid #664444; font-size: 0.8em; }
+.tb-retire:active  { background: #3a2020; }
+.tb-cpu-label { font-size: 0.75em; color: #88cc66; }
+
+/* ── Page content ──────────────────────────────────────────────────────────── */
+#page {
+  padding: 14px 12px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+h1 {
   text-align: center;
-  transition: background 0.15s;
+  font-size: 1.7em;
+  color: #ffd700;
+  margin-bottom: 2px;
+  letter-spacing: 3px;
+  text-shadow: 0 0 14px rgba(255,215,0,0.4);
 }
-.btn-resume:active { background: #2a4e6e; }
-
-/* ── Action area ── */
-.action-area {
+.subtitle {
   text-align: center;
-  background: #16293f;
-  border: 2px solid #2a4060;
-  border-radius: 14px;
-  padding: 20px 16px;
-  margin-bottom: 14px;
+  color: #7799bb;
+  margin-bottom: 16px;
+  font-size: 0.8em;
+  letter-spacing: 1px;
 }
 
-.actor-label {
-  font-size: 1.1em;
-  color: #aacce8;
-  margin-bottom: 14px;
-  min-height: 1.6em;
-  line-height: 1.4;
-}
-.actor-label.promo     { color: #ffd700; }
-.actor-label.cpu-label { color: #88cc66; }
-
+/* ── Event notices ─────────────────────────────────────────────────────────── */
 .event-notice {
   background: #2a1a4a;
   border: 1px solid #7744aa;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 10px 14px;
   margin-bottom: 12px;
   font-size: 0.95em;
   color: #cc99ff;
   line-height: 1.5;
 }
+.promo-notice {
+  background: #2a1e0a;
+  border-color: #b8860b;
+  color: #ffd060;
+}
 
-/* ── Dice ── */
-.dice-wrap { margin-bottom: 16px; }
-
-.dice {
-  display: inline-block;
-  width: 100px; height: 100px;
-  background: #fff;
-  border-radius: 18px;
-  font-size: 4em;
-  line-height: 100px;
-  text-align: center;
-  color: #0e1e36;
-  box-shadow: 4px 4px 14px rgba(0,0,0,0.7), inset 0 2px 4px rgba(255,255,255,0.4);
-  user-select: none;
-  touch-action: manipulation;
-}
-.dice.spinning {
-  animation: diceshake 0.12s ease-in-out infinite alternate;
-  box-shadow: 0 0 24px rgba(255,215,0,0.6), 4px 4px 14px rgba(0,0,0,0.7);
-}
-@keyframes diceshake {
-  from { transform: rotate(-10deg) scale(1.08); }
-  to   { transform: rotate(10deg)  scale(0.95); }
-}
-.dice-stop-anim { animation: dicestop 0.35s ease-out forwards; }
-@keyframes dicestop {
-  0%   { transform: rotate(-6deg) scale(1.05); }
-  40%  { transform: rotate(4deg)  scale(0.97); }
-  70%  { transform: rotate(-2deg) scale(1.01); }
-  100% { transform: rotate(0deg)  scale(1);    }
-}
-.dice-result-label {
-  font-size: 1.05em;
-  color: #aacce8;
-  margin-top: 8px;
-}
-.dice-result-label strong { color: #fff; font-size: 1.2em; }
-
-/* ── Buttons ── */
-.btn-row {
+/* ── Player cards: 縦並び ──────────────────────────────────────────────────── */
+.players-grid {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  align-items: center;
+  margin-bottom: 14px;
 }
 
-.btn {
-  display: block;
-  width: 100%;
-  max-width: 340px;
-  padding: 16px 20px;
-  border: none;
+.player-card {
+  background: #16293f;
+  border: 2px solid #2a4060;
   border-radius: 12px;
-  font-size: 1.15em;
-  font-weight: bold;
+  padding: 14px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.player-card.active {
+  border-color: #ffd700;
+  box-shadow: 0 0 12px rgba(255,215,0,0.25);
+}
+
+.card-left { flex: 1; min-width: 0; }
+.card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.card-name { font-size: 1.1em; font-weight: bold; color: #ffd700; }
+.badge-player { background: #1a4a7a; color: #7acfff; font-size: 0.65em; padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
+.badge-cpu    { background: #2a3a20; color: #88cc66; font-size: 0.65em; padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
+
+.rank-label { font-size: 0.75em; color: #7799bb; margin-bottom: 2px; }
+.rank-value { font-size: 1.15em; font-weight: bold; color: #aaddff; margin-bottom: 6px; }
+
+.rank-stars { display: flex; gap: 3px; flex-wrap: wrap; margin-bottom: 6px; }
+.rank-star { width: 9px; height: 9px; border-radius: 50%; background: #2a4060; }
+.rank-star.filled { background: #ffd700; }
+
+.dep-label { font-size: 0.75em; color: #7799bb; margin-bottom: 2px; }
+.dep-value { font-size: 0.95em; color: #dde8f5; }
+.dep-value.special { color: #ff88ff; font-weight: bold; }
+
+.btn-resume {
+  padding: 7px 12px;
+  background: #1e3a5a;
+  border: 1px solid #3a6090;
+  border-radius: 8px;
+  color: #88bbdd;
+  font-size: 0.85em;
   cursor: pointer;
   font-family: inherit;
-  letter-spacing: 1px;
-  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
   touch-action: manipulation;
 }
-.btn:active { transform: scale(0.97); }
-
-.btn-primary   { background: #ffd700; color: #0e1e36; }
-.btn-stop      { background: #cc3333; color: #fff; font-size: 1.2em; }
-.btn-promotion { background: #8b4513; color: #ffe0b0; }
-.btn-next      { background: #2a6a2a; color: #ccffcc; }
-.btn-restart   { background: #3a3a6a; color: #aaaaff; }
-.btn-retire    { background: #3a2020; color: #cc8888; border: 1px solid #664444; font-size: 1em; }
-
-.promo-hint {
-  font-size: 0.95em;
-  color: #ffcc66;
-  margin-bottom: 10px;
-}
+.btn-resume:active { background: #2a4e6e; }
 
 .retired-notice {
   background: #2a1010;
@@ -239,19 +178,37 @@ h1 {
   padding: 16px;
   color: #ffaaaa;
   font-size: 1.1em;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  text-align: center;
 }
 
-/* ── Log ── */
-.log-title { font-size: 0.9em; color: #7799bb; margin-bottom: 6px; letter-spacing: 1px; }
+/* ── Restart button ────────────────────────────────────────────────────────── */
+.btn-full {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.05em;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 12px;
+  touch-action: manipulation;
+}
+.btn-restart-full { background: #3a3a6a; color: #aaaaff; }
+.btn-restart-full:active { background: #4a4a8a; }
+
+/* ── Log ───────────────────────────────────────────────────────────────────── */
+.log-title { font-size: 0.85em; color: #7799bb; margin-bottom: 6px; letter-spacing: 1px; }
 .log-box {
   background: #0a1628;
   border: 1px solid #1e3050;
   border-radius: 10px;
   padding: 12px;
-  max-height: 150px;
+  max-height: 160px;
   overflow-y: auto;
-  font-size: 0.9em;
+  font-size: 0.88em;
   line-height: 1.9;
 }
 .log-box::-webkit-scrollbar { width: 4px; }
@@ -265,59 +222,152 @@ h1 {
 .log-special  { color: #ff88ff; font-weight: bold; }
 .log-no-promo { color: #886644; }
 
-/* ── Ending ── */
-.ending { text-align: center; padding: 16px 0; }
-.ending h2 { font-size: 1.8em; color: #ffd700; margin-bottom: 6px; }
-.end-sub { color: #7799bb; margin-bottom: 20px; font-size: 1em; }
-.result-grid {
+/* ── Dice dialog overlay ───────────────────────────────────────────────────── */
+#dice-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+#dice-dialog {
+  width: 80vw;
+  height: 80vh;
+  max-width: 400px;
+  max-height: 560px;
+  background: #16293f;
+  border: 2px solid #3a6090;
+  border-radius: 22px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 28px 20px;
 }
-.result-card { background: #16293f; border: 2px solid #2a4060; border-radius: 12px; padding: 16px; text-align: left; display: flex; align-items: center; gap: 16px; }
+.dlg-label {
+  font-size: 1.3em;
+  color: #aacce8;
+  text-align: center;
+  font-weight: bold;
+  line-height: 1.4;
+}
+.dlg-label.promo { color: #ffd700; }
+.dlg-label.cpu   { color: #88cc66; }
+
+.dice {
+  width: 130px; height: 130px;
+  background: #fff;
+  border-radius: 22px;
+  font-size: 5.2em;
+  line-height: 130px;
+  text-align: center;
+  color: #0e1e36;
+  box-shadow: 4px 6px 20px rgba(0,0,0,0.7), inset 0 2px 4px rgba(255,255,255,0.4);
+  user-select: none;
+}
+.dice.spinning {
+  animation: diceshake 0.12s ease-in-out infinite alternate;
+  box-shadow: 0 0 28px rgba(255,215,0,0.6), 4px 6px 20px rgba(0,0,0,0.7);
+}
+@keyframes diceshake {
+  from { transform: rotate(-10deg) scale(1.08); }
+  to   { transform: rotate(10deg)  scale(0.95); }
+}
+.dice-stop-anim { animation: dicestop 0.35s ease-out forwards; }
+@keyframes dicestop {
+  0%   { transform: rotate(-6deg) scale(1.05); }
+  40%  { transform: rotate(4deg)  scale(0.97); }
+  70%  { transform: rotate(-2deg) scale(1.01); }
+  100% { transform: rotate(0deg)  scale(1);    }
+}
+
+.dlg-result {
+  font-size: 1.2em;
+  color: #aacce8;
+  min-height: 1.5em;
+  text-align: center;
+}
+.dlg-result strong { color: #fff; font-size: 1.25em; }
+
+.btn-stop {
+  width: 200px;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  background: #cc3333;
+  color: #fff;
+  font-size: 1.25em;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: inherit;
+  touch-action: manipulation;
+}
+.btn-stop:active { background: #ee4444; transform: scale(0.97); }
+
+/* ── Ending screen ─────────────────────────────────────────────────────────── */
+.ending { text-align: center; padding: 8px 0 20px; }
+.ending h2 { font-size: 1.8em; color: #ffd700; margin-bottom: 6px; }
+.end-sub { color: #7799bb; margin-bottom: 20px; font-size: 0.95em; }
+
+.result-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.result-card {
+  background: #16293f;
+  border: 2px solid #2a4060;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 .result-card.winner { border-color: #ffd700; box-shadow: 0 0 14px rgba(255,215,0,0.3); }
 .result-place { font-size: 2em; flex-shrink: 0; }
-.result-info { flex: 1; }
-.result-name  { font-size: 1em; color: #ffd700; margin-bottom: 4px; }
-.result-rank  { font-size: 1.25em; font-weight: bold; color: #aaddff; margin-bottom: 2px; }
+.result-info { flex: 1; text-align: left; }
+.result-name  { font-size: 1em; color: #ffd700; margin-bottom: 3px; }
+.result-rank  { font-size: 1.2em; font-weight: bold; color: #aaddff; margin-bottom: 2px; }
 .result-dep   { font-size: 0.85em; color: #7799bb; }
-.final-rank-msg { color: #aacce8; margin-bottom: 20px; font-size: 1.05em; }
+.final-rank-msg { color: #aacce8; margin-bottom: 20px; font-size: 1em; }
 .final-rank-msg strong { color: #ffd700; font-size: 1.15em; }
 
-/* ── デスクトップ ── */
-@media (min-width: 640px) {
-  body { font-size: 17px; padding: 20px; }
-  h1 { font-size: 2.2em; letter-spacing: 4px; }
-  .subtitle { font-size: 0.9em; margin-bottom: 20px; }
-  .age-bar { font-size: 1.5em; margin-bottom: 18px; }
-
-  .players-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    overflow-x: visible;
-  }
-  .player-card { flex: unset; }
-
-  .action-area { padding: 24px 20px; }
-  .actor-label { font-size: 1.2em; }
-
-  .btn-row { flex-direction: row; justify-content: center; }
-  .btn { width: auto; padding: 14px 36px; }
-  .btn-retire { font-size: 1.05em; }
-
-  .log-box { max-height: 200px; font-size: 1em; }
-
-  .result-grid { display: grid; grid-template-columns: repeat(3,1fr); flex-direction: unset; }
-  .result-card { flex-direction: column; text-align: center; gap: 0; }
-  .result-place { margin-bottom: 8px; }
+.resume-btns { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.btn-resume-end {
+  display: block;
+  padding: 12px;
+  background: #1e3a5a;
+  border: 1px solid #3a6090;
+  border-radius: 8px;
+  color: #88bbdd;
+  font-size: 0.95em;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
 }
+.btn-resume-end:active { background: #2a4e6e; }
 </style>
 </head>
 <body>
-<h1>警察サイコロ</h1>
-<div class="subtitle">— ノンキャリア警察官 出世すごろく —</div>
-<div id="app"></div>
+
+<!-- Fixed topbar -->
+<div id="topbar"></div>
+
+<!-- Main scrollable content -->
+<div id="page">
+  <h1>警察サイコロ</h1>
+  <div class="subtitle">— ノンキャリア警察官 出世すごろく —</div>
+  <div id="app"></div>
+</div>
+
+<!-- Dice dialog overlay (static, always in DOM) -->
+<div id="dice-overlay" style="display:none">
+  <div id="dice-dialog">
+    <div id="dlg-label" class="dlg-label"></div>
+    <div class="dice" id="main-dice">🎲</div>
+    <div id="dlg-result" class="dlg-result"></div>
+    <div id="dlg-btns"></div>
+  </div>
+</div>
 
 <script>
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -355,7 +405,7 @@ function rankStars(rankIdx) {
   return h + '</div>';
 }
 
-// ── Dice animation ────────────────────────────────────────────────────────────
+// ── Dice animation (operates on static #main-dice in overlay) ────────────────
 let _rollingTimer = null;
 
 function diceStartSpin() {
@@ -381,15 +431,6 @@ function diceStopSpin(finalVal) {
 }
 
 // ── State ────────────────────────────────────────────────────────────────────
-/*
-  phases:
-    dep_idle      - waiting for player (deployment)
-    dep_rolling   - player's dep dice spinning
-    promo_idle    - waiting for player (promotion)
-    promo_rolling - player's promo dice spinning
-    cpu_seq       - CPU animations running
-    wait_next     - all done, waiting for next year
-*/
 let S;
 function initState() {
   S = {
@@ -415,41 +456,32 @@ function addLog(html) {
   if (S.log.length > 80) S.log.pop();
 }
 
-// promoted: true=昇進, false=昇進失敗, null=昇進チャンスなし
 function pushHistory(player, promoted) {
   player.history.push({
-    age: S.age,
-    dep: player.dep,
-    depSpecial: player.depSpecial,
-    rank: player.rank,
-    promoted: promoted,
+    age: S.age, dep: player.dep, depSpecial: player.depSpecial,
+    rank: player.rank, promoted,
   });
 }
 
 // ── Resume ───────────────────────────────────────────────────────────────────
 function showResume(idx) {
   const p = S.players[idx];
-
-  // Ask for name on first press
   if (p.customName === null) {
     const defaultName = p.isPlayer ? 'あなた' : p.name;
     const input = prompt('名前を入力してください', defaultName);
-    if (input === null) return; // キャンセル
+    if (input === null) return;
     p.customName = input.trim() || defaultName;
     render();
   }
-
-  const displayName = p.customName;
   const win = window.open('', '_blank', 'width=720,height=620,scrollbars=yes,resizable=yes');
   if (!win) { alert('ポップアップがブロックされました。許可してください。'); return; }
-  win.document.write(generateResumeHTML(p, displayName));
+  win.document.write(generateResumeHTML(p));
   win.document.close();
 }
 
-function generateResumeHTML(p, name) {
-  const born = 2000; // 仮の生まれ年（22歳入職を基準）
-  const entryYear = born + START_AGE;
-
+function generateResumeHTML(p) {
+  const name = p.customName || p.name;
+  const entryYear = 2000 + START_AGE;
   let rows = '';
   if (p.history.length === 0) {
     rows = `<tr><td colspan="4" style="text-align:center;color:#999;padding:20px;">まだ履歴はありません</td></tr>`;
@@ -459,7 +491,7 @@ function generateResumeHTML(p, name) {
       let bikou = '';
       if (h.promoted === true)  bikou = '<span style="color:#c00;font-weight:bold;">昇進</span>';
       if (h.promoted === false) bikou = '昇進ならず';
-      if (h.depSpecial)         bikou = (bikou ? bikou + '　' : '') + '<span style="color:#900;font-weight:bold;">警護課配属</span>';
+      if (h.depSpecial) bikou = (bikou ? bikou + '　' : '') + '<span style="color:#900;font-weight:bold;">警護課配属</span>';
       rows += `<tr>
         <td style="text-align:center;">${yr}年（${h.age}歳）</td>
         <td>${h.dep}</td>
@@ -468,30 +500,21 @@ function generateResumeHTML(p, name) {
       </tr>`;
     });
   }
-
-  return `<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
+  return `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
 <title>履歴書 - ${name}</title>
 <style>
-  body { font-family: 'Yu Mincho', 'Times New Roman', serif; background: #fdfaf5; color: #222; padding: 30px 40px; font-size: 15px; }
-  h1 { text-align: center; font-size: 2em; letter-spacing: 8px; margin-bottom: 30px; border-bottom: 3px double #333; padding-bottom: 12px; }
-  .info-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-  .info-table th { background: #3a3a5a; color: #fff; padding: 8px 14px; text-align: left; width: 130px; font-weight: normal; }
-  .info-table td { border: 1px solid #bbb; padding: 8px 14px; }
-  .info-table tr td { border-top: 1px solid #bbb; }
-  h2 { font-size: 1.2em; letter-spacing: 3px; margin-bottom: 12px; border-left: 4px solid #3a3a5a; padding-left: 10px; }
-  .history-table { width: 100%; border-collapse: collapse; }
-  .history-table th { background: #3a3a5a; color: #fff; padding: 9px 12px; font-weight: normal; text-align: center; }
-  .history-table td { border: 1px solid #ccc; padding: 8px 12px; }
-  .history-table tr:nth-child(even) td { background: #f5f0e8; }
-  .footer { margin-top: 30px; text-align: right; color: #999; font-size: 0.85em; }
-</style>
-</head>
-<body>
+  body{font-family:'Yu Mincho','Times New Roman',serif;background:#fdfaf5;color:#222;padding:30px 40px;font-size:15px;}
+  h1{text-align:center;font-size:2em;letter-spacing:8px;margin-bottom:30px;border-bottom:3px double #333;padding-bottom:12px;}
+  table{width:100%;border-collapse:collapse;margin-bottom:28px;}
+  th{background:#3a3a5a;color:#fff;padding:8px 12px;font-weight:normal;text-align:left;}
+  td{border:1px solid #ccc;padding:8px 12px;}
+  tr:nth-child(even) td{background:#f5f0e8;}
+  .info th{width:130px;}
+  h2{font-size:1.2em;letter-spacing:3px;margin-bottom:10px;border-left:4px solid #3a3a5a;padding-left:10px;}
+  .footer{margin-top:28px;text-align:right;color:#999;font-size:0.85em;}
+</style></head><body>
 <h1>履 歴 書</h1>
-<table class="info-table">
+<table class="info">
   <tr><th>氏名</th><td><strong style="font-size:1.1em;">${name}</strong></td></tr>
   <tr><th>入職年齢</th><td>${START_AGE}歳（大学卒業・ノンキャリア採用）</td></tr>
   <tr><th>現在の年齢</th><td>${S.age}歳</td></tr>
@@ -499,31 +522,22 @@ function generateResumeHTML(p, name) {
   <tr><th>現在の配属先</th><td>${p.dep}</td></tr>
 </table>
 <h2>職 歴</h2>
-<table class="history-table">
-  <thead>
-    <tr>
-      <th style="width:160px;">年　度</th>
-      <th>配 属 先</th>
-      <th style="width:120px;">職　位</th>
-      <th style="width:140px;">備　考</th>
-    </tr>
-  </thead>
-  <tbody>${rows}</tbody>
-</table>
+<table><thead><tr>
+  <th style="width:150px;">年度</th><th>配属先</th>
+  <th style="width:110px;">職位</th><th style="width:130px;">備考</th>
+</tr></thead><tbody>${rows}</tbody></table>
 <div class="footer">警察サイコロ — 履歴書</div>
-</body>
-</html>`;
+</body></html>`;
 }
 
 // ── Retirement ────────────────────────────────────────────────────────────────
 function retirePlayer() {
-  const confirmed = confirm('本当に退職しますか？\nキャリアを終了して、このまま退職します。');
-  if (!confirmed) return;
+  if (!confirm('本当に退職しますか？\nキャリアを終了して、このまま退職します。')) return;
   S.retired = true;
   render();
 }
 
-// ── Player click handler ──────────────────────────────────────────────────────
+// ── Player click ──────────────────────────────────────────────────────────────
 function playerClickDice() {
   if (S.phase === 'dep_idle') {
     S.phase = 'dep_rolling';
@@ -531,26 +545,23 @@ function playerClickDice() {
     render();
     diceStartSpin();
 
-  } else if (S.phase === 'dep_rolling') {
+  } else if (S.phase === 'dep_rolling' && S.diceVal === null) {
     const d = roll();
     diceStopSpin(d);
     S.diceVal = d;
-
     const p = S.players[0];
     const { dep, special } = pickDeployment(d, S.age);
     p.dep = dep; p.depSpecial = special;
-
     let log = `<span class="log-year">${S.age}歳</span> <span class="log-player">あなた</span>: 🎲${d} → `;
     log += special ? `<span class="log-special">【警護課配属！】${dep}</span>` : dep;
     addLog(log);
-
     if (isPromotionYear(S.age) && p.rank < RANKS.length - 1) {
       S.phase = 'promo_idle';
       render();
     } else {
       pushHistory(p, null);
       render();
-      setTimeout(startCPUSequence, 400);
+      setTimeout(startCPUSequence, 500);
     }
 
   } else if (S.phase === 'promo_idle') {
@@ -559,16 +570,14 @@ function playerClickDice() {
     render();
     diceStartSpin();
 
-  } else if (S.phase === 'promo_rolling') {
+  } else if (S.phase === 'promo_rolling' && S.diceVal === null) {
     const d = roll();
     diceStopSpin(d);
     S.diceVal = d;
-
     const p = S.players[0];
     let promoted = false;
     if (d <= 3 && p.rank < RANKS.length - 1) {
-      p.rank++;
-      promoted = true;
+      p.rank++; promoted = true;
       addLog(`<span class="log-year">${S.age}歳</span> <span class="log-player">あなた</span>: 🎲${d} → <span class="log-promo">昇進！ → ${RANKS[p.rank]}</span>`);
     } else if (p.rank >= RANKS.length - 1) {
       addLog(`<span class="log-year">${S.age}歳</span> <span class="log-player">あなた</span>: 🎲${d} → 既に最高職位`);
@@ -578,7 +587,7 @@ function playerClickDice() {
     }
     pushHistory(p, promoted);
     render();
-    setTimeout(startCPUSequence, 400);
+    setTimeout(startCPUSequence, 500);
   }
 }
 
@@ -598,11 +607,10 @@ function tickCPU() {
     render();
     return;
   }
-
   const cpu = S.players[S.cpuIdx + 1];
   S.cpuLabel = S.cpuRoll === 'dep'
-    ? `${cpu.name} が配属先サイコロを振っています...`
-    : `${cpu.name} が昇進サイコロを振っています...`;
+    ? `${cpu.name}\n配属先サイコロ`
+    : `${cpu.name}\n昇進サイコロ`;
   S.diceVal = null;
   render();
   diceStartSpin();
@@ -619,21 +627,18 @@ function tickCPU() {
       log += special ? `<span class="log-special">【警護課配属！】${dep}</span>` : dep;
       addLog(log);
       render();
-
       if (isPromotionYear(S.age) && cpu.rank < RANKS.length - 1) {
         S.cpuRoll = 'promo';
         setTimeout(tickCPU, 700);
       } else {
         pushHistory(cpu, null);
-        S.cpuIdx++;
-        S.cpuRoll = 'dep';
+        S.cpuIdx++; S.cpuRoll = 'dep';
         setTimeout(tickCPU, 600);
       }
     } else {
       let promoted = false;
       if (d <= 3 && cpu.rank < RANKS.length - 1) {
-        cpu.rank++;
-        promoted = true;
+        cpu.rank++; promoted = true;
         addLog(`<span class="log-year">${S.age}歳</span> <span class="log-cpu">${cpu.name}</span>: 🎲${d} → <span class="log-promo">昇進！ → ${RANKS[cpu.rank]}</span>`);
       } else if (cpu.rank >= RANKS.length - 1) {
         addLog(`<span class="log-year">${S.age}歳</span> <span class="log-cpu">${cpu.name}</span>: 🎲${d} → 既に最高職位`);
@@ -643,14 +648,13 @@ function tickCPU() {
       }
       pushHistory(cpu, promoted);
       render();
-      S.cpuIdx++;
-      S.cpuRoll = 'dep';
+      S.cpuIdx++; S.cpuRoll = 'dep';
       setTimeout(tickCPU, 600);
     }
   }, 1200);
 }
 
-// ── Year advance ──────────────────────────────────────────────────────────────
+// ── Year / restart ────────────────────────────────────────────────────────────
 function nextYear() {
   S.age++;
   S.diceVal = null;
@@ -667,154 +671,163 @@ function restart() {
   render();
 }
 
-// ── Active player index ───────────────────────────────────────────────────────
-function getActiveIdx() {
-  if (['dep_idle','dep_rolling','promo_idle','promo_rolling'].includes(S.phase)) return 0;
-  if (S.phase === 'cpu_seq') return S.cpuIdx + 1;
-  return -1;
-}
-
 // ── Render ────────────────────────────────────────────────────────────────────
 function render() {
+  // Safety: clear any stray interval (dice element is persistent so this is safe)
   clearInterval(_rollingTimer);
   _rollingTimer = null;
 
-  const app = document.getElementById('app');
-  if (S.gameOver) { renderEnding(app); return; }
+  if (S.gameOver) {
+    buildTopbar();
+    document.getElementById('app').innerHTML = buildEnding();
+    document.getElementById('dice-overlay').style.display = 'none';
+    return;
+  }
+
+  buildTopbar();
+  document.getElementById('app').innerHTML = buildMain();
+  updateDialog();
+}
+
+function buildTopbar() {
+  const tb = document.getElementById('topbar');
+  if (S.gameOver) {
+    tb.innerHTML = `<div class="tb-left"></div>
+      <div class="tb-center"><span class="tb-age" style="font-size:1em;color:#ffd700;">警察サイコロ — 定年退職</span></div>
+      <div class="tb-right"></div>`;
+    return;
+  }
 
   const promYear = isPromotionYear(S.age);
-  const gogoYear = isGogoYear(S.age);
-  const activeIdx = getActiveIdx();
+
+  // Left: retire button
+  const leftHTML = (!S.retired && S.phase === 'dep_idle')
+    ? `<button class="tb-btn tb-retire" onclick="retirePlayer()">🚪 退職</button>`
+    : '';
+
+  // Center: age
+  let centerHTML = `<span class="tb-age">${S.age}歳</span>`;
+  if (promYear && !S.retired) centerHTML += `<span class="tb-promo-badge">★昇進</span>`;
+
+  // Right: action button
+  let rightHTML = '';
+  if (!S.retired) {
+    if      (S.phase === 'dep_idle')   rightHTML = `<button class="tb-btn tb-action" onclick="playerClickDice()">🎲 サイコロ</button>`;
+    else if (S.phase === 'promo_idle') rightHTML = `<button class="tb-btn tb-promo"  onclick="playerClickDice()">🎲 昇進サイコロ</button>`;
+    else if (S.phase === 'wait_next')  rightHTML = `<button class="tb-btn tb-next"   onclick="nextYear()">次の年 →</button>`;
+    else if (S.phase === 'cpu_seq')    rightHTML = `<span class="tb-cpu-label">CPU中…</span>`;
+  }
+
+  tb.innerHTML = `
+    <div class="tb-left">${leftHTML}</div>
+    <div class="tb-center">${centerHTML}</div>
+    <div class="tb-right">${rightHTML}</div>`;
+}
+
+function buildMain() {
+  if (S.retired) {
+    return buildPlayerCards()
+      + `<div class="retired-notice">🚪 退職しました。お疲れ様でした。</div>`
+      + `<button class="btn-full btn-restart-full" onclick="restart()">もう一度プレイ</button>`
+      + buildLog();
+  }
 
   let html = '';
+  const gogoYear = isGogoYear(S.age);
+  if (gogoYear && (S.phase === 'dep_idle' || S.phase === 'dep_rolling'))
+    html += `<div class="event-notice">🌟 35歳イベント：警護課推薦！ <strong>2か5</strong> が出ると警護課に配属されます</div>`;
+  if (S.phase === 'promo_idle')
+    html += `<div class="event-notice promo-notice">🏅 昇進チャンス！ 右上のボタンでサイコロを振ってください（1〜3で昇進）</div>`;
 
-  // Age bar
-  html += `<div class="age-bar">年齢: <strong>${S.age}歳</strong>`;
-  if (promYear) html += `<span class="promotion-badge">★ 昇進チャンスの年</span>`;
-  html += `</div>`;
+  html += buildPlayerCards();
+  html += buildLog();
+  return html;
+}
 
-  // Player cards
-  html += '<div class="players-grid">';
+function buildPlayerCards() {
+  const activeIdx = S.phase === 'cpu_seq' ? S.cpuIdx + 1
+    : ['dep_idle','dep_rolling','promo_idle','promo_rolling'].includes(S.phase) ? 0 : -1;
+
+  let html = '<div class="players-grid">';
   S.players.forEach((p, i) => {
-    const displayName = p.customName !== null ? p.customName : p.name;
+    const name = p.customName !== null ? p.customName : p.name;
     html += `<div class="player-card${i === activeIdx ? ' active' : ''}">`;
-    html += `<h2><span class="card-name">${displayName}</span> `;
+    html += `<div class="card-left">`;
+    html += `<div class="card-header"><span class="card-name">${name}</span>`;
     html += p.isPlayer ? `<span class="badge-player">プレイヤー</span>` : `<span class="badge-cpu">CPU</span>`;
-    html += `</h2>`;
+    html += `</div>`;
     html += `<div class="rank-label">職位</div>`;
     html += `<div class="rank-value">${RANKS[p.rank]}</div>`;
     html += rankStars(p.rank);
     html += `<div class="dep-label">配属先</div>`;
     html += `<div class="dep-value${p.depSpecial ? ' special' : ''}">${p.depSpecial ? '⭐ ' : ''}${p.dep}</div>`;
-    html += `<button class="btn-resume" onclick="showResume(${i})">📄 履歴書を見る</button>`;
+    html += `</div>`; // card-left
+    html += `<div class="card-right">`;
+    html += `<button class="btn-resume" onclick="showResume(${i})">📄 履歴書</button>`;
+    html += `</div>`;
     html += `</div>`;
   });
-  html += '</div>';
-
-  // Action area
-  html += '<div class="action-area">';
-
-  if (S.retired) {
-    html += `<div class="retired-notice">🚪 退職しました。お疲れ様でした。</div>`;
-    html += `<div class="btn-row"><button class="btn btn-restart" onclick="restart()">もう一度プレイ</button></div>`;
-    html += '</div>';
-  } else {
-    // 35歳イベント notice
-    if (gogoYear && (S.phase === 'dep_idle' || S.phase === 'dep_rolling')) {
-      html += `<div class="event-notice">🌟 35歳イベント：警護課推薦！ <strong>2か5</strong> が出ると警護課に配属されます</div>`;
-    }
-
-    // Actor label
-    let labelText = '', labelClass = '';
-    if      (S.phase === 'dep_idle')      { labelText = 'あなたの番 ― 配属先を決めましょう'; }
-    else if (S.phase === 'dep_rolling')   { labelText = 'サイコロが転がっています…'; }
-    else if (S.phase === 'promo_idle')    { labelText = '昇進チャンス！ もう一度振ってください'; labelClass = 'promo'; }
-    else if (S.phase === 'promo_rolling') { labelText = '昇進サイコロが転がっています…'; labelClass = 'promo'; }
-    else if (S.phase === 'cpu_seq')       { labelText = S.cpuLabel; labelClass = 'cpu-label'; }
-    else if (S.phase === 'wait_next')     { labelText = '全員の今年の結果が確定しました'; }
-    html += `<div class="actor-label ${labelClass}">${labelText}</div>`;
-
-    // Dice
-    const spinning = ['dep_rolling','promo_rolling','cpu_seq'].includes(S.phase);
-    const diceFace = S.diceVal ? DICE_FACES[S.diceVal] : '🎲';
-    html += `<div class="dice-wrap">`;
-    html += `<div class="dice${spinning ? ' spinning' : ''}" id="main-dice">${diceFace}</div>`;
-    if (S.diceVal && !spinning)
-      html += `<div class="dice-result-label">出た目: <strong>${S.diceVal}</strong></div>`;
-    html += `</div>`;
-
-    // Buttons
-    html += '<div class="btn-row">';
-    if (S.phase === 'dep_idle') {
-      html += `<button class="btn btn-primary" onclick="playerClickDice()">🎲 サイコロを振る</button>`;
-      html += `<button class="btn btn-retire" onclick="retirePlayer()">🚪 退職する</button>`;
-    } else if (S.phase === 'dep_rolling') {
-      html += `<button class="btn btn-stop" onclick="playerClickDice()">✋ 止める！</button>`;
-    } else if (S.phase === 'promo_idle') {
-      html += `<div style="width:100%;text-align:center;"><div class="promo-hint">1〜3 で昇進　／　4〜6 で昇進なし</div>`;
-      html += `<button class="btn btn-promotion" onclick="playerClickDice()">🎲 昇進サイコロを振る</button></div>`;
-    } else if (S.phase === 'promo_rolling') {
-      html += `<button class="btn btn-stop" onclick="playerClickDice()">✋ 止める！</button>`;
-    } else if (S.phase === 'wait_next') {
-      html += `<button class="btn btn-next" onclick="nextYear()">次の年へ → （${S.age + 1}歳）</button>`;
-    }
-    html += '</div>';
-
-    html += '</div>'; // action-area
-  }
-
-  // Log
-  html += '<div class="log-section">';
-  html += '<div class="log-title">▼ 記録</div>';
-  html += '<div class="log-box">';
-  html += S.log.length ? S.log.join('<br>') : '<span style="color:#445566">まだ記録はありません</span>';
-  html += '</div></div>';
-
-  app.innerHTML = html;
-
-  // Restart spin for CPU sequence (after DOM rebuild)
-  if (S.phase === 'cpu_seq') {
-    _rollingTimer = setInterval(() => {
-      const el = document.getElementById('main-dice');
-      if (el) el.textContent = DICE_FACES[Math.floor(Math.random() * 6) + 1];
-    }, 70);
-    const el = document.getElementById('main-dice');
-    if (el) el.classList.add('spinning');
-  }
+  return html + '</div>';
 }
 
-function renderEnding(app) {
+function buildLog() {
+  let html = '<div class="log-title">▼ 記録</div><div class="log-box">';
+  html += S.log.length ? S.log.join('<br>') : '<span style="color:#445566">まだ記録はありません</span>';
+  return html + '</div>';
+}
+
+function updateDialog() {
+  const overlay = document.getElementById('dice-overlay');
+  const isOpen = ['dep_rolling','promo_rolling','cpu_seq'].includes(S.phase) && !S.retired;
+  overlay.style.display = isOpen ? 'flex' : 'none';
+  if (!isOpen) return;
+
+  // Label
+  let labelText = '', labelClass = '';
+  if      (S.phase === 'dep_rolling')   { labelText = '配属先サイコロ';            labelClass = ''; }
+  else if (S.phase === 'promo_rolling') { labelText = '昇進サイコロ！';            labelClass = 'promo'; }
+  else if (S.phase === 'cpu_seq')       { labelText = S.cpuLabel.replace('\n','<br>'); labelClass = 'cpu'; }
+  const dlgLabel = document.getElementById('dlg-label');
+  dlgLabel.innerHTML = labelText;
+  dlgLabel.className = 'dlg-label' + (labelClass ? ' ' + labelClass : '');
+
+  // Result (shown only after dice stops)
+  const resultEl = document.getElementById('dlg-result');
+  resultEl.innerHTML = S.diceVal ? `出た目: <strong>${S.diceVal}</strong>` : '';
+
+  // Stop button: only for player, only while spinning (diceVal is null)
+  const showStop = S.diceVal === null && (S.phase === 'dep_rolling' || S.phase === 'promo_rolling');
+  document.getElementById('dlg-btns').innerHTML = showStop
+    ? `<button class="btn-stop" onclick="playerClickDice()">✋ 止める！</button>`
+    : '';
+}
+
+function buildEnding() {
   const sorted = [...S.players].sort((a, b) => b.rank - a.rank);
   const medals = ['🥇','🥈','🥉'];
-
-  let html = '<div class="ending">';
-  html += '<h2>定年退職</h2>';
+  let html = '<div class="ending"><h2>定年退職</h2>';
   html += '<div class="end-sub">全員が72歳を迎え、定年退職しました</div>';
-  html += '<div class="result-grid">';
+  html += '<div class="result-list">';
   sorted.forEach((p, i) => {
     const name = p.customName !== null ? p.customName : p.name;
     html += `<div class="result-card${i === 0 ? ' winner' : ''}">`;
-    html += `<div class="result-place">${medals[i] || (i + 1) + '位'}</div>`;
+    html += `<div class="result-place">${medals[i]}</div>`;
+    html += `<div class="result-info">`;
     html += `<div class="result-name">${name}</div>`;
     html += `<div class="result-rank">${RANKS[p.rank]}</div>`;
     html += `<div class="result-dep">最終配属: ${p.dep}</div>`;
-    html += `</div>`;
+    html += `</div></div>`;
   });
   html += '</div>';
   html += `<div class="final-rank-msg">あなたの最終職位: <strong>${RANKS[S.players[0].rank]}</strong></div>`;
-
-  // Resume buttons in ending screen too
-  html += '<div style="margin-bottom:20px;">';
+  html += '<div class="resume-btns">';
   S.players.forEach((p, i) => {
     const name = p.customName !== null ? p.customName : p.name;
-    html += `<button class="btn btn-restart" style="margin:4px;" onclick="showResume(${i})">📄 ${name} の履歴書</button>`;
+    html += `<button class="btn-resume-end" onclick="showResume(${i})">📄 ${name} の履歴書を見る</button>`;
   });
   html += '</div>';
-
-  html += `<button class="btn btn-restart" onclick="restart()">もう一度プレイ</button>`;
-  html += '</div>';
-
-  app.innerHTML = html;
+  html += `<button class="btn-full btn-restart-full" onclick="restart()">もう一度プレイ</button>`;
+  return html + '</div>';
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
