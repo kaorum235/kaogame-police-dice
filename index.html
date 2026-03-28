@@ -291,6 +291,8 @@ h1 {
   text-align: center;
 }
 .dlg-result strong { color: #fff; font-size: 1.25em; }
+.dlg-dep { display: block; margin-top: 8px; font-size: 1.05em; color: #dde8f5; }
+.dlg-dep.special { color: #ff88ff; font-weight: bold; }
 
 .btn-stop {
   width: 200px;
@@ -793,7 +795,21 @@ function updateDialog() {
 
   // Result (shown only after dice stops)
   const resultEl = document.getElementById('dlg-result');
-  resultEl.innerHTML = S.diceVal ? `出た目: <strong>${S.diceVal}</strong>` : '';
+  if (!S.diceVal) {
+    resultEl.innerHTML = '';
+  } else {
+    let resHTML = `出た目: <strong>${S.diceVal}</strong>`;
+    // 配属先を表示（配属ロールのとき）
+    let dep = null, depSpecial = false;
+    if (S.phase === 'dep_rolling') {
+      dep = S.players[0].dep; depSpecial = S.players[0].depSpecial;
+    } else if (S.phase === 'cpu_seq' && S.cpuRoll === 'dep') {
+      const cpu = S.players[S.cpuIdx + 1];
+      dep = cpu.dep; depSpecial = cpu.depSpecial;
+    }
+    if (dep) resHTML += `<br><span class="dlg-dep${depSpecial ? ' special' : ''}">📍 ${dep}</span>`;
+    resultEl.innerHTML = resHTML;
+  }
 
   // Stop button: only for player, only while spinning (diceVal is null)
   const showStop = S.diceVal === null && (S.phase === 'dep_rolling' || S.phase === 'promo_rolling');
