@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>警察サイコロ</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Yu Gothic UI', 'Meiryo', sans-serif;
+  background: #0e1e36;
+  color: #dde8f5;
+  min-height: 100vh;
+  padding: 16px;
+  font-size: 18px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2.2em;
+  color: #ffd700;
+  margin-bottom: 4px;
+  letter-spacing: 4px;
+  text-shadow: 0 0 16px rgba(255,215,0,0.4);
+}
+.subtitle {
+  text-align: center;
+  color: #7799bb;
+  margin-bottom: 20px;
+  font-size: 1em;
+  letter-spacing: 2px;
+}
+
+.age-bar {
+  text-align: center;
+  font-size: 1.5em;
+  color: #aacce8;
+  margin-bottom: 18px;
+}
+.age-bar strong { color: #ffffff; font-size: 1.3em; }
+
+.promotion-badge {
+  display: inline-block;
+  background: #b8860b;
+  color: #fff;
+  font-size: 0.65em;
+  padding: 3px 12px;
+  border-radius: 20px;
+  margin-left: 12px;
+  vertical-align: middle;
+  animation: pulse 1s infinite alternate;
+}
+@keyframes pulse {
+  from { opacity: 0.7; }
+  to   { opacity: 1; box-shadow: 0 0 10px #ffd700; }
+}
+
+/* ── Player cards ── */
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.player-card {
+  background: #16293f;
+  border: 2px solid #2a4060;
+  border-radius: 12px;
+  padding: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.player-card.active {
+  border-color: #ffd700;
+  box-shadow: 0 0 14px rgba(255,215,0,0.3);
+}
+.player-card h2 {
+  font-size: 1.15em;
+  color: #ffd700;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #2a4060;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.card-name { flex: 1; }
+.badge-player { background: #1a4a7a; color: #7acfff; font-size: 0.65em; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+.badge-cpu    { background: #2a3a20; color: #88cc66; font-size: 0.65em; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+
+.rank-label { font-size: 0.8em; color: #7799bb; margin-bottom: 3px; }
+.rank-value { font-size: 1.25em; font-weight: bold; color: #aaddff; margin-bottom: 10px; }
+
+.rank-stars { display: flex; gap: 4px; margin-bottom: 10px; }
+.rank-star { width: 11px; height: 11px; border-radius: 50%; background: #2a4060; }
+.rank-star.filled { background: #ffd700; }
+
+.dep-label { font-size: 0.8em; color: #7799bb; margin-bottom: 3px; }
+.dep-value { font-size: 1.05em; color: #dde8f5; margin-bottom: 12px; }
+.dep-value.special { color: #ff88ff; font-weight: bold; }
+
+.btn-resume {
+  display: block;
+  width: 100%;
+  padding: 7px;
+  background: #1e3a5a;
+  border: 1px solid #3a6090;
+  border-radius: 8px;
+  color: #88bbdd;
+  font-size: 0.9em;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  transition: background 0.15s;
+}
+.btn-resume:hover { background: #2a4e6e; color: #aaddff; }
+
+/* ── Action area ── */
+.action-area {
+  text-align: center;
+  background: #16293f;
+  border: 2px solid #2a4060;
+  border-radius: 14px;
+  padding: 24px 20px;
+  margin-bottom: 18px;
+}
+
+.actor-label {
+  font-size: 1.2em;
+  color: #aacce8;
+  margin-bottom: 16px;
+  min-height: 1.8em;
+}
+.actor-label.promo     { color: #ffd700; }
+.actor-label.cpu-label { color: #88cc66; }
+
+.event-notice {
+  background: #2a1a4a;
+  border: 1px solid #7744aa;
+  border-radius: 8px;
+  padding: 10px 18px;
+  margin-bottom: 14px;
+  font-size: 1em;
+  color: #cc99ff;
+}
+
+/* ── Dice ── */
+.dice-wrap { margin-bottom: 18px; }
+
+.dice {
+  display: inline-block;
+  width: 90px; height: 90px;
+  background: #fff;
+  border-radius: 16px;
+  font-size: 3.6em;
+  line-height: 90px;
+  text-align: center;
+  color: #0e1e36;
+  box-shadow: 4px 4px 14px rgba(0,0,0,0.7), inset 0 2px 4px rgba(255,255,255,0.4);
+  user-select: none;
+  transition: box-shadow 0.2s;
+}
+.dice.spinning {
+  animation: diceshake 0.12s ease-in-out infinite alternate;
+  box-shadow: 0 0 20px rgba(255,215,0,0.5), 4px 4px 14px rgba(0,0,0,0.7);
+}
+@keyframes diceshake {
+  from { transform: rotate(-10deg) scale(1.08); }
+  to   { transform: rotate(10deg)  scale(0.95); }
+}
+.dice-stop-anim { animation: dicestop 0.35s ease-out forwards; }
+@keyframes dicestop {
+  0%   { transform: rotate(-6deg) scale(1.05); }
+  40%  { transform: rotate(4deg)  scale(0.97); }
+  70%  { transform: rotate(-2deg) scale(1.01); }
+  100% { transform: rotate(0deg)  scale(1);    }
+}
+.dice-result-label {
+  font-size: 1.1em;
+  color: #aacce8;
+  margin-top: 8px;
+}
+.dice-result-label strong { color: #fff; font-size: 1.2em; }
+
+/* ── Buttons ── */
+.btn {
+  padding: 14px 36px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.15em;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 1px;
+  transition: background 0.15s, transform 0.1s;
+  margin: 4px 6px;
+}
+.btn:active { transform: scale(0.96); }
+
+.btn-primary   { background: #ffd700; color: #0e1e36; }
+.btn-primary:hover { background: #ffe840; }
+
+.btn-stop      { background: #cc3333; color: #fff; font-size: 1.2em; }
+.btn-stop:hover { background: #ee4444; }
+
+.btn-promotion { background: #8b4513; color: #ffe0b0; }
+.btn-promotion:hover { background: #a0522d; }
+
+.btn-next      { background: #2a6a2a; color: #ccffcc; }
+.btn-next:hover { background: #3a8a3a; }
+
+.btn-restart   { background: #3a3a6a; color: #aaaaff; }
+.btn-restart:hover { background: #4a4a8a; }
+
+.btn-retire    { background: #3a2020; color: #cc8888; border: 1px solid #664444; }
+.btn-retire:hover { background: #502828; color: #ffaaaa; }
+
+.promo-hint {
+  font-size: 1em;
+  color: #ffcc66;
+  margin-bottom: 12px;
+}
+
+.retired-notice {
+  background: #2a1010;
+  border: 2px solid #884444;
+  border-radius: 10px;
+  padding: 16px 24px;
+  color: #ffaaaa;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+/* ── Log ── */
+.log-title { font-size: 0.95em; color: #7799bb; margin-bottom: 6px; letter-spacing: 1px; }
+.log-box {
+  background: #0a1628;
+  border: 1px solid #1e3050;
+  border-radius: 10px;
+  padding: 14px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 1em;
+  line-height: 2;
+}
+.log-box::-webkit-scrollbar { width: 6px; }
+.log-box::-webkit-scrollbar-track { background: #0a1628; }
+.log-box::-webkit-scrollbar-thumb { background: #2a4060; border-radius: 3px; }
+
+.log-year     { color: #ffd700; font-weight: bold; }
+.log-player   { color: #7acfff; font-weight: bold; }
+.log-cpu      { color: #88cc66; }
+.log-promo    { color: #ffaa44; font-weight: bold; }
+.log-special  { color: #ff88ff; font-weight: bold; }
+.log-no-promo { color: #886644; }
+
+/* ── Ending ── */
+.ending { text-align: center; padding: 24px 0; }
+.ending h2 { font-size: 2.2em; color: #ffd700; margin-bottom: 8px; }
+.end-sub { color: #7799bb; margin-bottom: 32px; font-size: 1.1em; }
+.result-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 28px; }
+.result-card { background: #16293f; border: 2px solid #2a4060; border-radius: 12px; padding: 22px 14px; }
+.result-card.winner { border-color: #ffd700; box-shadow: 0 0 18px rgba(255,215,0,0.35); }
+.result-place { font-size: 2em; margin-bottom: 10px; }
+.result-name  { font-size: 1.1em; color: #ffd700; margin-bottom: 8px; }
+.result-rank  { font-size: 1.4em; font-weight: bold; color: #aaddff; margin-bottom: 6px; }
+.result-dep   { font-size: 0.95em; color: #7799bb; }
+.final-rank-msg { color: #aacce8; margin-bottom: 24px; font-size: 1.15em; }
+.final-rank-msg strong { color: #ffd700; font-size: 1.2em; }
+</style>
+</head>
+<body>
+<h1>警察サイコロ</h1>
+<div class="subtitle">— ノンキャリア警察官 出世すごろく —</div>
+<div id="app"></div>
+
+<script>
+// ── Constants ────────────────────────────────────────────────────────────────
+const RANKS = ['巡査','巡査部長','警部補','警部','警視','警視正','警視長','警視監','警視総監'];
+
+const DEPLOYMENTS_NORMAL = [
+  '交番','生活安全課','少年課','刑事課','機動捜査隊',
+  '捜査一課','捜査二課','捜査三課','捜査四課',
+  '地域課','交通課','交通機動隊','高速道路交通警察隊',
+  '警備課','機動隊','鑑識課','科学捜査研究所',
+  '留置管理課','通信指令室','外事課','公安課',
+  '薬物銃器対策課','組織犯罪対策課','サイバー犯罪対策課',
+  '人身安全対策課','防犯課','警務課','警察学校',
+  '水上警察署','空港警察署',
+];
+const DEPLOYMENTS_GOGO = ['警護課一係','警護課二係','警護課三係','警護課四係'];
+const DICE_FACES = ['','⚀','⚁','⚂','⚃','⚄','⚅'];
+const START_AGE = 22, RETIRE_AGE = 72;
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function roll() { return Math.floor(Math.random() * 6) + 1; }
+function isPromotionYear(age) { return age > START_AGE && (age - START_AGE) % 5 === 0; }
+function isGogoYear(age) { return age === 35; }
+
+function pickDeployment(dice, age) {
+  if (isGogoYear(age) && (dice === 2 || dice === 5))
+    return { dep: DEPLOYMENTS_GOGO[Math.floor(Math.random() * DEPLOYMENTS_GOGO.length)], special: true };
+  return { dep: DEPLOYMENTS_NORMAL[Math.floor(Math.random() * DEPLOYMENTS_NORMAL.length)], special: false };
+}
+
+function rankStars(rankIdx) {
+  let h = '<div class="rank-stars">';
+  for (let i = 0; i < RANKS.length; i++)
+    h += `<div class="rank-star${i <= rankIdx ? ' filled' : ''}"></div>`;
+  return h + '</div>';
+}
+
+// ── Dice animation ────────────────────────────────────────────────────────────
+let _rollingTimer = null;
+
+function diceStartSpin() {
+  if (_rollingTimer) return;
+  _rollingTimer = setInterval(() => {
+    const el = document.getElementById('main-dice');
+    if (el) el.textContent = DICE_FACES[Math.floor(Math.random() * 6) + 1];
+  }, 70);
+  const el = document.getElementById('main-dice');
+  if (el) el.classList.add('spinning');
+}
+
+function diceStopSpin(finalVal) {
+  clearInterval(_rollingTimer);
+  _rollingTimer = null;
+  const el = document.getElementById('main-dice');
+  if (el) {
+    el.classList.remove('spinning');
+    el.classList.add('dice-stop-anim');
+    el.textContent = DICE_FACES[finalVal];
+    setTimeout(() => { if (el) el.classList.remove('dice-stop-anim'); }, 400);
+  }
+}
+
+// ── State ────────────────────────────────────────────────────────────────────
+/*
+  phases:
+    dep_idle      - waiting for player (deployment)
+    dep_rolling   - player's dep dice spinning
+    promo_idle    - waiting for player (promotion)
+    promo_rolling - player's promo dice spinning
+    cpu_seq       - CPU animations running
+    wait_next     - all done, waiting for next year
+*/
+let S;
+function initState() {
+  S = {
+    age: START_AGE,
+    players: [
+      { name: 'あなた', rank: 0, dep: '交番', isPlayer: true,  depSpecial: false, history: [], customName: null },
+      { name: 'CPU 1',  rank: 0, dep: '交番', isPlayer: false, depSpecial: false, history: [], customName: null },
+      { name: 'CPU 2',  rank: 0, dep: '交番', isPlayer: false, depSpecial: false, history: [], customName: null },
+    ],
+    phase: 'dep_idle',
+    diceVal: null,
+    cpuIdx: 0,
+    cpuRoll: 'dep',
+    cpuLabel: '',
+    log: [],
+    retired: false,
+    gameOver: false,
+  };
+}
+
+function addLog(html) {
+  S.log.unshift(html);
+  if (S.log.length > 80) S.log.pop();
+}
+
+// promoted: true=昇進, false=昇進失敗, null=昇進チャンスなし
+function pushHistory(player, promoted) {
+  player.history.push({
+    age: S.age,
+    dep: player.dep,
+    depSpecial: player.depSpecial,
+    rank: player.rank,
+    promoted: promoted,
+  });
+}
+
+// ── Resume ───────────────────────────────────────────────────────────────────
+function showResume(idx) {
+  const p = S.players[idx];
+
+  // Ask for name on first press
+  if (p.customName === null) {
+    const defaultName = p.isPlayer ? 'あなた' : p.name;
+    const input = prompt('名前を入力してください', defaultName);
+    if (input === null) return; // キャンセル
+    p.customName = input.trim() || defaultName;
+    render();
+  }
+
+  const displayName = p.customName;
+  const win = window.open('', '_blank', 'width=720,height=620,scrollbars=yes,resizable=yes');
+  if (!win) { alert('ポップアップがブロックされました。許可してください。'); return; }
+  win.document.write(generateResumeHTML(p, displayName));
+  win.document.close();
+}
+
+function generateResumeHTML(p, name) {
+  const born = 2000; // 仮の生まれ年（22歳入職を基準）
+  const entryYear = born + START_AGE;
+
+  let rows = '';
+  if (p.history.length === 0) {
+    rows = `<tr><td colspan="4" style="text-align:center;color:#999;padding:20px;">まだ履歴はありません</td></tr>`;
+  } else {
+    p.history.forEach(h => {
+      const yr = entryYear + (h.age - START_AGE);
+      let bikou = '';
+      if (h.promoted === true)  bikou = '<span style="color:#c00;font-weight:bold;">昇進</span>';
+      if (h.promoted === false) bikou = '昇進ならず';
+      if (h.depSpecial)         bikou = (bikou ? bikou + '　' : '') + '<span style="color:#900;font-weight:bold;">警護課配属</span>';
+      rows += `<tr>
+        <td style="text-align:center;">${yr}年（${h.age}歳）</td>
+        <td>${h.dep}</td>
+        <td style="text-align:center;">${RANKS[h.rank]}</td>
+        <td>${bikou}</td>
+      </tr>`;
+    });
+  }
+
+  return `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>履歴書 - ${name}</title>
+<style>
+  body { font-family: 'Yu Mincho', 'Times New Roman', serif; background: #fdfaf5; color: #222; padding: 30px 40px; font-size: 15px; }
+  h1 { text-align: center; font-size: 2em; letter-spacing: 8px; margin-bottom: 30px; border-bottom: 3px double #333; padding-bottom: 12px; }
+  .info-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+  .info-table th { background: #3a3a5a; color: #fff; padding: 8px 14px; text-align: left; width: 130px; font-weight: normal; }
+  .info-table td { border: 1px solid #bbb; padding: 8px 14px; }
+  .info-table tr td { border-top: 1px solid #bbb; }
+  h2 { font-size: 1.2em; letter-spacing: 3px; margin-bottom: 12px; border-left: 4px solid #3a3a5a; padding-left: 10px; }
+  .history-table { width: 100%; border-collapse: collapse; }
+  .history-table th { background: #3a3a5a; color: #fff; padding: 9px 12px; font-weight: normal; text-align: center; }
+  .history-table td { border: 1px solid #ccc; padding: 8px 12px; }
+  .history-table tr:nth-child(even) td { background: #f5f0e8; }
+  .footer { margin-top: 30px; text-align: right; color: #999; font-size: 0.85em; }
+</style>
+</head>
+<body>
+<h1>履 歴 書</h1>
+<table class="info-table">
+  <tr><th>氏名</th><td><strong style="font-size:1.1em;">${name}</strong></td></tr>
+  <tr><th>入職年齢</th><td>${START_AGE}歳（大学卒業・ノンキャリア採用）</td></tr>
+  <tr><th>現在の年齢</th><td>${S.age}歳</td></tr>
+  <tr><th>現在の職位</th><td>${RANKS[p.rank]}</td></tr>
+  <tr><th>現在の配属先</th><td>${p.dep}</td></tr>
+</table>
+<h2>職 歴</h2>
+<table class="history-table">
+  <thead>
+    <tr>
+      <th style="width:160px;">年　度</th>
+      <th>配 属 先</th>
+      <th style="width:120px;">職　位</th>
+      <th style="width:140px;">備　考</th>
+    </tr>
+  </thead>
+  <tbody>${rows}</tbody>
+</table>
+<div class="footer">警察サイコロ — 履歴書</div>
+</body>
+</html>`;
+}
+
+// ── Retirement ────────────────────────────────────────────────────────────────
+function retirePlayer() {
+  const confirmed = confirm('本当に退職しますか？\nキャリアを終了して、このまま退職します。');
+  if (!confirmed) return;
+  S.retired = true;
+  render();
+}
+
+// ── Player click handler ──────────────────────────────────────────────────────
+function playerClickDice() {
+  if (S.phase === 'dep_idle') {
+    S.phase = 'dep_rolling';
+    S.diceVal = null;
+    render();
+    diceStartSpin();
+
+  } else if (S.phase === 'dep_rolling') {
+    const d = roll();
+    diceStopSpin(d);
+    S.diceVal = d;
+
+    const p = S.players[0];
+    const { dep, special } = pickDeployment(d, S.age);
+    p.dep = dep; p.depSpecial = special;
+
+    let log = `<span class="log-year">${S.age}歳</span> <span class="log-player">あなた</span>: 🎲${d} → `;
+    log += special ? `<span class="log-special">【警護課配属！】${dep}</span>` : dep;
+    addLog(log);
+
+    if (isPromotionYear(S.age) && p.rank < RANKS.length - 1) {
+      S.phase = 'promo_idle';
+      render();
+    } else {
+      pushHistory(p, null);
+      render();
+      setTimeout(startCPUSequence, 400);
+    }
+
+  } else if (S.phase === 'promo_idle') {
+    S.phase = 'promo_rolling';
+    S.diceVal = null;
+    render();
+    diceStartSpin();
+
+  } else if (S.phase === 'promo_rolling') {
+    const d = roll();
+    diceStopSpin(d);
+    S.diceVal = d;
+
+    const p = S.players[0];
+    let promoted = false;
+    if (d <= 3 && p.rank < RANKS.length - 1) {
+      p.rank++;
+      promoted = true;
+      addLog(`<span class="log-year">${S.age}歳</span> <span class="log-player">あなた</span>: 🎲${d} → <span class="log-promo">昇進！ → ${RANKS[p.rank]}</span>`);
+    } else if (p.rank >= RANKS.length - 1) {
+      addLog(`<span class="log-year">${S.age}歳</span> <span class="log-player">あなた</span>: 🎲${d} → 既に最高職位`);
+      promoted = null;
+    } else {
+      addLog(`<span class="log-year">${S.age}歳</span> <span class="log-player">あなた</span>: 🎲${d} → <span class="log-no-promo">昇進ならず</span>`);
+    }
+    pushHistory(p, promoted);
+    render();
+    setTimeout(startCPUSequence, 400);
+  }
+}
+
+// ── CPU sequence ──────────────────────────────────────────────────────────────
+function startCPUSequence() {
+  S.phase = 'cpu_seq';
+  S.cpuIdx = 0;
+  S.cpuRoll = 'dep';
+  tickCPU();
+}
+
+function tickCPU() {
+  if (S.cpuIdx >= S.players.length - 1) {
+    S.phase = 'wait_next';
+    S.cpuLabel = '';
+    S.diceVal = null;
+    render();
+    return;
+  }
+
+  const cpu = S.players[S.cpuIdx + 1];
+  S.cpuLabel = S.cpuRoll === 'dep'
+    ? `${cpu.name} が配属先サイコロを振っています...`
+    : `${cpu.name} が昇進サイコロを振っています...`;
+  S.diceVal = null;
+  render();
+  diceStartSpin();
+
+  setTimeout(() => {
+    const d = roll();
+    diceStopSpin(d);
+    S.diceVal = d;
+
+    if (S.cpuRoll === 'dep') {
+      const { dep, special } = pickDeployment(d, S.age);
+      cpu.dep = dep; cpu.depSpecial = special;
+      let log = `<span class="log-year">${S.age}歳</span> <span class="log-cpu">${cpu.name}</span>: 🎲${d} → `;
+      log += special ? `<span class="log-special">【警護課配属！】${dep}</span>` : dep;
+      addLog(log);
+      render();
+
+      if (isPromotionYear(S.age) && cpu.rank < RANKS.length - 1) {
+        S.cpuRoll = 'promo';
+        setTimeout(tickCPU, 700);
+      } else {
+        pushHistory(cpu, null);
+        S.cpuIdx++;
+        S.cpuRoll = 'dep';
+        setTimeout(tickCPU, 600);
+      }
+    } else {
+      let promoted = false;
+      if (d <= 3 && cpu.rank < RANKS.length - 1) {
+        cpu.rank++;
+        promoted = true;
+        addLog(`<span class="log-year">${S.age}歳</span> <span class="log-cpu">${cpu.name}</span>: 🎲${d} → <span class="log-promo">昇進！ → ${RANKS[cpu.rank]}</span>`);
+      } else if (cpu.rank >= RANKS.length - 1) {
+        addLog(`<span class="log-year">${S.age}歳</span> <span class="log-cpu">${cpu.name}</span>: 🎲${d} → 既に最高職位`);
+        promoted = null;
+      } else {
+        addLog(`<span class="log-year">${S.age}歳</span> <span class="log-cpu">${cpu.name}</span>: 🎲${d} → <span class="log-no-promo">昇進ならず</span>`);
+      }
+      pushHistory(cpu, promoted);
+      render();
+      S.cpuIdx++;
+      S.cpuRoll = 'dep';
+      setTimeout(tickCPU, 600);
+    }
+  }, 1200);
+}
+
+// ── Year advance ──────────────────────────────────────────────────────────────
+function nextYear() {
+  S.age++;
+  S.diceVal = null;
+  S.phase = 'dep_idle';
+  S.cpuLabel = '';
+  if (S.age >= RETIRE_AGE) S.gameOver = true;
+  render();
+}
+
+function restart() {
+  clearInterval(_rollingTimer);
+  _rollingTimer = null;
+  initState();
+  render();
+}
+
+// ── Active player index ───────────────────────────────────────────────────────
+function getActiveIdx() {
+  if (['dep_idle','dep_rolling','promo_idle','promo_rolling'].includes(S.phase)) return 0;
+  if (S.phase === 'cpu_seq') return S.cpuIdx + 1;
+  return -1;
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  clearInterval(_rollingTimer);
+  _rollingTimer = null;
+
+  const app = document.getElementById('app');
+  if (S.gameOver) { renderEnding(app); return; }
+
+  const promYear = isPromotionYear(S.age);
+  const gogoYear = isGogoYear(S.age);
+  const activeIdx = getActiveIdx();
+
+  let html = '';
+
+  // Age bar
+  html += `<div class="age-bar">年齢: <strong>${S.age}歳</strong>`;
+  if (promYear) html += `<span class="promotion-badge">★ 昇進チャンスの年</span>`;
+  html += `</div>`;
+
+  // Player cards
+  html += '<div class="players-grid">';
+  S.players.forEach((p, i) => {
+    const displayName = p.customName !== null ? p.customName : p.name;
+    html += `<div class="player-card${i === activeIdx ? ' active' : ''}">`;
+    html += `<h2><span class="card-name">${displayName}</span> `;
+    html += p.isPlayer ? `<span class="badge-player">プレイヤー</span>` : `<span class="badge-cpu">CPU</span>`;
+    html += `</h2>`;
+    html += `<div class="rank-label">職位</div>`;
+    html += `<div class="rank-value">${RANKS[p.rank]}</div>`;
+    html += rankStars(p.rank);
+    html += `<div class="dep-label">配属先</div>`;
+    html += `<div class="dep-value${p.depSpecial ? ' special' : ''}">${p.depSpecial ? '⭐ ' : ''}${p.dep}</div>`;
+    html += `<button class="btn-resume" onclick="showResume(${i})">📄 履歴書を見る</button>`;
+    html += `</div>`;
+  });
+  html += '</div>';
+
+  // Action area
+  html += '<div class="action-area">';
+
+  if (S.retired) {
+    html += `<div class="retired-notice">🚪 退職しました。お疲れ様でした。</div>`;
+    html += `<button class="btn btn-restart" onclick="restart()">もう一度プレイ</button>`;
+    html += '</div>';
+  } else {
+    // 35歳イベント notice
+    if (gogoYear && (S.phase === 'dep_idle' || S.phase === 'dep_rolling')) {
+      html += `<div class="event-notice">🌟 35歳イベント：警護課推薦！ <strong>2か5</strong> が出ると警護課に配属されます</div>`;
+    }
+
+    // Actor label
+    let labelText = '', labelClass = '';
+    if      (S.phase === 'dep_idle')      { labelText = 'あなたの番 ― 配属先を決めましょう'; }
+    else if (S.phase === 'dep_rolling')   { labelText = 'サイコロが転がっています…'; }
+    else if (S.phase === 'promo_idle')    { labelText = '昇進チャンス！ もう一度振ってください'; labelClass = 'promo'; }
+    else if (S.phase === 'promo_rolling') { labelText = '昇進サイコロが転がっています…'; labelClass = 'promo'; }
+    else if (S.phase === 'cpu_seq')       { labelText = S.cpuLabel; labelClass = 'cpu-label'; }
+    else if (S.phase === 'wait_next')     { labelText = '全員の今年の結果が確定しました'; }
+    html += `<div class="actor-label ${labelClass}">${labelText}</div>`;
+
+    // Dice
+    const spinning = ['dep_rolling','promo_rolling','cpu_seq'].includes(S.phase);
+    const diceFace = S.diceVal ? DICE_FACES[S.diceVal] : '🎲';
+    html += `<div class="dice-wrap">`;
+    html += `<div class="dice${spinning ? ' spinning' : ''}" id="main-dice">${diceFace}</div>`;
+    if (S.diceVal && !spinning)
+      html += `<div class="dice-result-label">出た目: <strong>${S.diceVal}</strong></div>`;
+    html += `</div>`;
+
+    // Buttons
+    if (S.phase === 'dep_idle') {
+      html += `<button class="btn btn-primary" onclick="playerClickDice()">🎲 サイコロを振る</button>`;
+      html += `<button class="btn btn-retire" onclick="retirePlayer()">🚪 退職する</button>`;
+    } else if (S.phase === 'dep_rolling') {
+      html += `<button class="btn btn-stop" onclick="playerClickDice()">✋ 止める！</button>`;
+    } else if (S.phase === 'promo_idle') {
+      html += `<div class="promo-hint">1〜3 で昇進　／　4〜6 で昇進なし</div>`;
+      html += `<button class="btn btn-promotion" onclick="playerClickDice()">🎲 昇進サイコロを振る</button>`;
+    } else if (S.phase === 'promo_rolling') {
+      html += `<button class="btn btn-stop" onclick="playerClickDice()">✋ 止める！</button>`;
+    } else if (S.phase === 'wait_next') {
+      html += `<button class="btn btn-next" onclick="nextYear()">次の年へ → （${S.age + 1}歳）</button>`;
+    }
+
+    html += '</div>'; // action-area
+  }
+
+  // Log
+  html += '<div class="log-section">';
+  html += '<div class="log-title">▼ 記録</div>';
+  html += '<div class="log-box">';
+  html += S.log.length ? S.log.join('<br>') : '<span style="color:#445566">まだ記録はありません</span>';
+  html += '</div></div>';
+
+  app.innerHTML = html;
+
+  // Restart spin for CPU sequence (after DOM rebuild)
+  if (S.phase === 'cpu_seq') {
+    _rollingTimer = setInterval(() => {
+      const el = document.getElementById('main-dice');
+      if (el) el.textContent = DICE_FACES[Math.floor(Math.random() * 6) + 1];
+    }, 70);
+    const el = document.getElementById('main-dice');
+    if (el) el.classList.add('spinning');
+  }
+}
+
+function renderEnding(app) {
+  const sorted = [...S.players].sort((a, b) => b.rank - a.rank);
+  const medals = ['🥇','🥈','🥉'];
+
+  let html = '<div class="ending">';
+  html += '<h2>定年退職</h2>';
+  html += '<div class="end-sub">全員が72歳を迎え、定年退職しました</div>';
+  html += '<div class="result-grid">';
+  sorted.forEach((p, i) => {
+    const name = p.customName !== null ? p.customName : p.name;
+    html += `<div class="result-card${i === 0 ? ' winner' : ''}">`;
+    html += `<div class="result-place">${medals[i] || (i + 1) + '位'}</div>`;
+    html += `<div class="result-name">${name}</div>`;
+    html += `<div class="result-rank">${RANKS[p.rank]}</div>`;
+    html += `<div class="result-dep">最終配属: ${p.dep}</div>`;
+    html += `</div>`;
+  });
+  html += '</div>';
+  html += `<div class="final-rank-msg">あなたの最終職位: <strong>${RANKS[S.players[0].rank]}</strong></div>`;
+
+  // Resume buttons in ending screen too
+  html += '<div style="margin-bottom:20px;">';
+  S.players.forEach((p, i) => {
+    const name = p.customName !== null ? p.customName : p.name;
+    html += `<button class="btn btn-restart" style="margin:4px;" onclick="showResume(${i})">📄 ${name} の履歴書</button>`;
+  });
+  html += '</div>';
+
+  html += `<button class="btn btn-restart" onclick="restart()">もう一度プレイ</button>`;
+  html += '</div>';
+
+  app.innerHTML = html;
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+initState();
+render();
+</script>
+</body>
+</html>
